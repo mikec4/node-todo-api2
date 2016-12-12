@@ -23,6 +23,15 @@ app.post('/todoz',function(req,res){
     });
 });
 
+app.get('/todoz',(req,res)=>{
+   
+   Todo.find().then((todo)=>{
+       res.status(200).send({todo});
+   },(err)=>{
+   res.status(400).send(err);
+   });
+});
+
 app.listen(3000,()=>{
     console.log('Listeng to port',3000);
 });
