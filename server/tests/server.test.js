@@ -7,10 +7,25 @@ const {app}=require('./../server');
 const {Todo}=require('./../models/todo');
 
 
+const todos=[{
+  text:'Hello kido',
+},
+{
+  text:"maharage"
+},
+{
+  text:'Beans'
+},
+{
+  text:'Meat'
+}];
+
+
+ describe('POST /todoz',()=>{
+
 beforeEach((done)=>{
   Todo.remove({}).then(()=>done());
 });
- describe('POST /todoz',()=>{
 
       it('It should create new todos',(done)=>{
           var text='Hello mike congrats';
@@ -52,5 +67,32 @@ beforeEach((done)=>{
           })
       });
 
+
+    afterEach((done)=>{
+  Todo.insertMany(todos).then((todz)=>{
+      if(todz) return done();
+  }).catch((err)=>{
+    done(err);
+  });
+});
+
      
+ });
+
+
+
+ describe('GET/todoz',()=>{
+    
+    it('It should get all todoz',(done)=>{
+
+       request(app)
+       .get('/todoz')
+       .expect(200)
+       .expect((res)=>{
+         expect(res.body.todo.length).toBeGreaterThan(0);
+       })
+       .end(done);
+
+       
+    });
  });
