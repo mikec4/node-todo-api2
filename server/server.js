@@ -5,6 +5,9 @@ const bodParser=require('body-parser');
 var {mongoose}=require('./db/mongoose');
 var {Todo}=require('./models/todo');
 var {User}=require('./models/user');
+var {ObjectId}=require('mongodb');
+
+
 
 
 var app=express();
@@ -23,6 +26,7 @@ app.post('/todoz',function(req,res){
     });
 });
 
+//get all todoz
 app.get('/todoz',(req,res)=>{
    
    Todo.find().then((todo)=>{
@@ -30,6 +34,28 @@ app.get('/todoz',(req,res)=>{
    },(err)=>{
    res.status(400).send(err);
    });
+});
+
+//get todoz by id
+
+app.get('/todoz/:id',(req,res)=>{
+    
+    // var valid=ObjectId.isValid(req.params.id);
+
+    // if(valid)return res.status(404).send('Invalid id');
+
+    var id=req.params.id;
+    if(!ObjectId.isValid(id))return res.status(404).send();
+
+    Todo.findById(id).then((todo)=>{
+
+        if(!todo)return res.status(404).send();
+
+        return res.send(todo);
+            
+    
+    }).catch((e)=>res.status(400).send(e));
+       
 });
 
 app.listen(3000,()=>{
