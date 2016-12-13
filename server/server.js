@@ -60,6 +60,25 @@ app.get('/todoz/:id',(req,res)=>{
        
 });
 
+//delete the todoz
+
+app.delete('/todoz/:id',(req,res)=>{
+    //get the id
+    var _id =req.params.id;
+
+    //validate the id -> not valid return 404 back
+    if(!ObjectId.isValid(_id))return res.status(404).send();
+
+    //remove by id
+    Todo.findByIdAndRemove(_id).then((document)=>{
+
+        if(!document)return res.status(404).send();
+        
+         res.status(200).send(document);
+
+    }).catch((e)=>res.status(400).send());
+});
+
 app.listen(port,()=>{
     console.log(`Started up to port ${port}`);
 });
