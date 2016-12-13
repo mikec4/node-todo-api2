@@ -70,11 +70,11 @@ app.delete('/todoz/:id',(req,res)=>{
     if(!ObjectId.isValid(_id))return res.status(404).send();
 
     //remove by id
-    Todo.findByIdAndRemove(_id).then((document)=>{
+    Todo.findByIdAndRemove(_id).then((todo)=>{
 
-        if(!document)return res.status(404).send();
-        
-         res.status(200).send(document);
+        if(!todo)return res.status(404).send();
+
+         res.status(200).send({todo});
 
     }).catch((e)=>res.status(400).send());
 });

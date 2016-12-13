@@ -131,13 +131,54 @@ beforeEach((done)=>{
    });
    it('should return 404 for non object Ids',(done)=>{
       // todoz/123
-      
+
       var _id=12;
       request(app)
       .get(`/todoz/${_id}`)
       .expect(404)
       .end(done);
    });
+ });
+
+ describe('DELETE /todoz/:id',()=>{
+
+ it('should remove a todo',(done)=>{
+     var id=todos[0]._id.toHexString();
+   request(app)
+   .delete(`/todoz/${id}`)
+   .expect(200)
+   .expect((res)=>{
+     expect(res.body.todo._id).toBe(id);
+   })
+   .end((err,res)=>{
+     if(err)return done(err);
+
+      Todo.findById(id).then((todo)=>{
+         expect(todo).toNotExist();
+         done();
+      }).catch((e)=>done(e));
+   });
+ });
+
+ it('should return 404 if todo not found',(done)=>{
+          var id=new ObjectID().toHexString();
+        request(app)
+        .delete(`/todoz/${id}`)
+        .expect(404)
+        .end(done);
+           
+        });
+
+  
+
+ 
+
+ it('should return 404 if objectId is invalid',(done)=>{
+    var id=1;
+    request(app)
+    .delete(`/todoz/id`)
+    .expect(404)
+    .end(done);
  })
 
-
+ });
