@@ -149,6 +149,8 @@ beforeEach((done)=>{
    .expect(200)
    .expect((res)=>{
      expect(res.body.todo._id).toBe(id);
+
+     
    })
    .end((err,res)=>{
      if(err)return done(err);
@@ -161,7 +163,7 @@ beforeEach((done)=>{
  });
 
  it('should return 404 if todo not found',(done)=>{
-          var id=new ObjectID().toHexString();
+         var id=new ObjectID().toHexString();
         request(app)
         .delete(`/todoz/${id}`)
         .expect(404)

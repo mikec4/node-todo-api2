@@ -13,7 +13,7 @@ var Schema=mongoose.Schema({
     },
     completed:{
         type:String,
-        default:true
+        default:false
     },
     completedAt:{
         type:Number,
