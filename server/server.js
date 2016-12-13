@@ -7,6 +7,7 @@ var {Todo}=require('./models/todo');
 var {User}=require('./models/user');
 var {ObjectId}=require('mongodb');
 
+const port=process.env.PORT || 3000;
 
 
 
@@ -52,14 +53,15 @@ app.get('/todoz/:id',(req,res)=>{
         if(!todo)return res.status(404).send();
 
         return res.send({todo});
+
             
     
     }).catch((e)=>res.status(400).send(e));
        
 });
 
-app.listen(3000,()=>{
-    console.log('Listeng to port',3000);
+app.listen(port,()=>{
+    console.log(`Started up to port ${port}`);
 });
 
 module.exports={app};
