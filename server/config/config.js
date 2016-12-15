@@ -1,6 +1,5 @@
 const env=process.env.NODE_ENV || 'development';
 
-console.log('env*8**** ',env);
 
 if(env==='development'){
     process.env.PORT=3000;

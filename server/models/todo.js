@@ -3,7 +3,7 @@ var {mongoose}=require('./../db/mongoose');
 
 
 
-var Schema=mongoose.Schema({
+var UserSchema=mongoose.Schema({
     text:{
         type:String,
         required:true,
@@ -23,7 +23,7 @@ var Schema=mongoose.Schema({
 
 
 
-var Todo=mongoose.model('Todo',Schema);
+var Todo=mongoose.model('Todo',UserSchema);
 
 
 

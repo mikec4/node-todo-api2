@@ -1,15 +1,70 @@
+const validator =require ('validator');
+const jwt=require('jsonwebtoken');
+const _=require('lodash');
+
+
+
 var {mongoose}=require('./../db/mongoose');
 
-var Schema=mongoose.Schema({
+var UserSchema=mongoose.Schema({
     email:{
         type:String,
         required:true,
         trim:true,
-        minLength:1
-    }
+        minlength:1,
+        unique:true,
+        validate:{
+            validator:validator.isEmail,
+            message:'{value} is not the valid email'
+        }
+    },
+    password:{
+        type:String,
+        required:true,
+        trim:true,
+        minlength:6
+    },
+    tokens:[{
+        access:{
+            type:String,
+            required:true
+        },
+        token:{
+            type:String,
+            required:true
+        }
+    }]
 });
 
-var User=mongoose.model('Users',Schema);
+
+UserSchema.methods.toJSON=function(){
+  var user=this;
+  var userObject=user.toObject();
+
+  return _.pick(userObject,['_id','email']);
+}
+
+UserSchema.methods.generateAuthToken=function(){
+    var user=this;
+
+    var access='auth';
+    var obj={
+        _id:user._id.toHexString(),
+        access
+    }
+    var token=jwt.sign(obj,'Mike');
+
+    user.tokens.push(
+        {
+            access,token
+        });
+
+        return user.save().then(()=>{
+             return token;
+        });
+
+};
+var User=mongoose.model('Users',UserSchema);
 
 module.exports={User};
 
