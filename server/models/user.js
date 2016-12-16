@@ -38,6 +38,7 @@ var UserSchema=mongoose.Schema({
 
 
 UserSchema.methods.toJSON=function(){
+
   var user=this;
   var userObject=user.toObject();
 
@@ -64,6 +65,28 @@ UserSchema.methods.generateAuthToken=function(){
         });
 
 };
+
+UserSchema.statics.findByToken=function(token){
+    var User=this;
+    var decoded;
+
+    try {
+        decoded=jwt.verify(token,'Mike');
+
+    } catch (error) {
+        return Promise.reject();
+    }
+
+   var user= User.findOne({
+        _id:decoded._id,
+        'tokens.token':token,
+         'tokens.access':decoded.access
+
+    });
+    return user;
+
+};
+
 var User=mongoose.model('Users',UserSchema);
 
 module.exports={User};
