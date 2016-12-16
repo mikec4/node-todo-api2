@@ -87,6 +87,17 @@ UserSchema.statics.findByToken=function(token){
     return user;
 
 };
+
+UserSchema.methods.removeToken=function(token){
+
+var user=this;
+
+return user.update({
+    $pull:{
+        tokens:{token}
+    }
+}); 
+};
 UserSchema.pre('save',function(next){
 
   var user=this;
@@ -123,7 +134,7 @@ var user= User.findOne({email}).then((user)=>{
           bcrypt.compare(password,user.password,(err,result)=>{
              
             if(result)res(user);
-            
+
             else rej();
 
           });
@@ -131,6 +142,8 @@ var user= User.findOne({email}).then((user)=>{
 });
 return user;
 };
+
+
 
 var User=mongoose.model('Users',UserSchema);
 
