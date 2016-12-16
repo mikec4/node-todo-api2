@@ -5,6 +5,7 @@ require('./config/config');
 const express=require('express');
 const bodParser=require('body-parser');
 const _=require('lodash');
+const bcrypt=require('bcryptjs');
 
 
 
@@ -133,6 +134,20 @@ app.post('/userz',(req,res)=>{
 app.get('/userz/me',authenticate,(req,res)=>{
      res.send(req.user);
 });
+
+app.post('/userz/login',(req,res)=>{
+
+var body=_.pick(req.body,['email','password']);
+
+User.findByCredentials(body.email,body.password).then((user)=>{
+
+      return user.generateAuthToken().then((token)=>{
+          res.header('x-auth',token).send({user});
+      });
+
+}).catch((e)=>res.status(400).send());
+
+})
 
 app.listen(port,()=>{
     console.log(`Started up to port ${port}`);
