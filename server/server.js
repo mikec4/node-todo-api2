@@ -118,7 +118,6 @@ app.post('/userz',(req,res)=>{
     var body=_.pick(req.body,['email','password']);
 
     var user=new User(body);
-
     user.save().then((user)=>{
 
        return user.generateAuthToken();

@@ -1,6 +1,7 @@
 const validator =require ('validator');
 const jwt=require('jsonwebtoken');
 const _=require('lodash');
+const bcrypt=require('bcryptjs');
 
 
 
@@ -86,6 +87,29 @@ UserSchema.statics.findByToken=function(token){
     return user;
 
 };
+UserSchema.pre('save',function(next){
+
+  var user=this;
+  
+  if(user.isModified('password')){
+     
+     bcrypt.genSalt(10,(err,salt)=>{
+
+         if(err) return Promise.reject();
+
+         bcrypt.hash(user.password,salt,(err,hash)=>{
+
+            if(err)return Promise.reject();
+             user.password=hash;
+
+              next();
+         });
+     });
+  }else{
+      next();
+  }
+
+});
 
 var User=mongoose.model('Users',UserSchema);
 
