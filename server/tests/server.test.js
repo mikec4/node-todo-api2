@@ -6,38 +6,14 @@ const {ObjectID}=require('mongodb');
 
 const {app}=require('./../server');
 const {Todo}=require('./../models/todo');
+const {User}=require('./../models/user');
+
+const {todos,populateTodos,users,populateUsers}=require('./seed/seed');
 
 
-const todos=[{
-  _id:new ObjectID,
-  text:'Hello kido'
 
-},
-{
-  _id:new ObjectID(),
-  text:"maharage",
-    completed:true,
-  completedAt:333
-},
-{  
-  _id:new ObjectID(),
-  text:'Beans'
-},
-{
-   _id:new ObjectID(),
-  text:'Meat'
-}];
-
-
-beforeEach((done)=>{
-  Todo.remove().then(()=>{
-
-    Todo.insertMany(todos).then((todo)=>{
-        done();
-    }).catch((e)=>done(e));
-    
-  });
-});
+beforeEach(populateUsers);
+beforeEach(populateTodos);
 
  describe('POST /todoz',()=>{
 
@@ -67,7 +43,7 @@ beforeEach((done)=>{
       });
 
       it('Should create todo with invalid body data',(done)=>{
-          
+
           request(app)
           .post('/todoz')
           .send({})
@@ -84,15 +60,15 @@ beforeEach((done)=>{
       });
 
 
-   
 
-     
+
+
  });
 
 
 
  describe('GET/todoz',()=>{
-    
+
     it('It should get all todoz',(done)=>{
 
        request(app)
@@ -103,21 +79,21 @@ beforeEach((done)=>{
        })
        .end(done);
 
-       
+
     });
  });
 
 
  describe('GET/todoz/id',()=>{
-   
+
    it('should return a todo document',(done)=>{
-    
+
       request(app)
       .get(`/todoz/${todos[2]._id.toHexString()}`)
       .expect(200)
       .expect((res)=>{
         expect(res.body.todo.text).toBe(todos[2].text);
-      
+
       })
       .end(done);
    })
@@ -153,7 +129,7 @@ beforeEach((done)=>{
    .expect((res)=>{
      expect(res.body.todo._id).toBe(id);
 
-     
+
    })
    .end((err,res)=>{
      if(err)return done(err);
@@ -171,12 +147,12 @@ beforeEach((done)=>{
         .delete(`/todoz/${id}`)
         .expect(404)
         .end(done);
-           
+
         });
 
-  
 
- 
+
+
 
  it('should return 404 if objectId is invalid',(done)=>{
     var id=1;
@@ -190,9 +166,9 @@ beforeEach((done)=>{
 
 
 describe('PATCH /todoz/:id',()=>{
-  
+
   it('should update the todo',(done)=>{
-   
+
     var id=todos[0]._id;
      var text="This is my update";
 
@@ -227,8 +203,85 @@ describe('PATCH /todoz/:id',()=>{
       expect(res.body.todo.completedAt).toNotExist();
 
     })
-    .end(done); 
+    .end(done);
 
   });
+
+});
+
+describe('GET /userz/me',()=>{
+
+  it('it should return user if authenticated',(done)=>{
+
+    request(app)
+     .get('/userz/me')
+     .set('x-auth',users[0].tokens[0].token)
+     .expect(200)
+     .expect((res)=>{
+       expect(res.body._id).toBe(users[0]._id.toHexString());
+       expect(res.body.email).toBe(users[0].email);
+     })
+     .end(done);
+  });
+
+  it('it should return 401 if not authenticated',(done)=>{
+   request(app)
+   .get('/userz/me')
+   .expect(401)
+   .expect((res)=>{
+     expect(res.body).toEqual({});
+
+   })
+   .end(done);
+  });
+});
+
+describe('POST /userz',()=>{
+
+  it('it should create user',(done)=>{
+
+    var email='m3@example.com';
+    var password='1234567';
+
+     request(app)
+     .post('/userz')
+     .send({email,password})
+     .expect(200)
+     .expect((res)=>{
+       expect(res.body.user.email).toExist();
+       expect(res.body.user._id).toExist();
+       expect(res.body.user.email).toBe(email);
+     })
+      .end((err)=>{
+        if(err)return done(err);
+
+        User.findOne({email}).then((user)=>{
+           expect(user).toExist();
+           expect(user.password).toNotBe(password);
+           done();
+        });
+      });
+  });
+  it('it should return validation error if invalid request',(done)=>{
+      
+      var email='mama.com';
+      var password='123';
+       request(app)
+       .post('/userz')
+       .send({email,password})
+       .expect(400)
+       .end(done); 
+  });
+
+  it('it should not create user if email in use',(done)=>{
   
+  var email=users[0].email;
+  var password='1234567'
+
+     request(app)
+     .post('/userz')
+     .send({email,password})
+     .expect(400)
+     .end(done);
+  });
 });
