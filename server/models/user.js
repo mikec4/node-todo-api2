@@ -38,13 +38,7 @@ var UserSchema=mongoose.Schema({
 });
 
 
-UserSchema.methods.toJSON=function(){
 
-  var user=this;
-  var userObject=user.toObject();
-
-  return _.pick(userObject,['_id','email']);
-}
 
 UserSchema.methods.generateAuthToken=function(){
     var user=this;
@@ -98,6 +92,15 @@ return user.update({
     }
 }); 
 };
+
+UserSchema.methods.toJSON=function(){
+
+  var user=this;
+  var userObject=user.toObject();
+
+  return _.pick(userObject,['_id','email']);
+};
+
 UserSchema.pre('save',function(next){
 
   var user=this;
