@@ -17,7 +17,7 @@ beforeEach(populateTodos);
 
  describe('POST /todoz',()=>{
 
-
+// console.log('JWT',process.env.JWT_SECRET);
 
       it('It should create new todos',(done)=>{
           var text='Hello mike congrats';
