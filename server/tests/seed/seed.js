@@ -7,6 +7,10 @@ const jwt=require('jsonwebtoken');
 
 const userOneId=new ObjectID();
 const userTwoId=new ObjectID();
+const userThreeId=new ObjectID();
+const userFourId=new ObjectID();
+
+
 const users=[
   {
     _id:userOneId,
@@ -22,27 +26,36 @@ const users=[
   {
      _id:userTwoId,
      email:'m2@example.com',
-     password:'1234567'
+     password:'1234567',
+     tokens:[
+       {
+         access:'auth',
+         token:jwt.sign({_id:userTwoId,access:'auth'},'Mike').toString()
+       }
+     ]
 }];
 
 const todos=[{
   _id:new ObjectID,
-  text:'Hello kido'
-
+  text:'Hello kido',
+  _creator:userOneId
 },
 {
   _id:new ObjectID(),
   text:"maharage",
     completed:true,
-  completedAt:333
+  completedAt:333,
+  _creator:userTwoId
 },
 {
   _id:new ObjectID(),
-  text:'Beans'
+  text:'Beans',
+  _creator:userThreeId
 },
 {
    _id:new ObjectID(),
-  text:'Meat'
+  text:'Meat',
+  _creator:userFourId
 }];
 
 
